@@ -615,6 +615,9 @@ start_time = time.time()
 
 
 def main():
+    """
+    the main function responsible for the operation of the entire program
+    """
     game_over = False
     player2_turn = False
     screen.fill(WHITE)
