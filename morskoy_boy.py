@@ -450,7 +450,7 @@ def update_used_blocks(ship, used_blocks_set):
     :return: used_blocks_set: used_blocks_set
     :rtype: set
     """
-    if not isinstance(ship, set):
+    if len(ship) > 5:
         raise Warning
     for block in ship:
         for i in range(-1, 2):
