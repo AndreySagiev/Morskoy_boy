@@ -723,8 +723,8 @@ def main():
                                          used_blocks_for_manual_drawing, player2_ships_to_draw)
 
     while not game_over:
-        draw_ships(player1_ships_to_draw)
-        draw_ships(player2_ships_to_draw)
+        # draw_ships(player1_ships_to_draw)
+        # draw_ships(player2_ships_to_draw)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_over = True
