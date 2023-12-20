@@ -9,7 +9,7 @@ GREEN_BLUE = (0, 153, 153)
 LIGHT_GRAY = (192, 192, 192)
 RED = (255, 0, 0)
 
-block_size = 50
+block_size = 30
 left_margin = 2 * block_size
 upper_margin = block_size
 
@@ -353,6 +353,8 @@ def add_missed_block_to_dotted_set(fired_block):
     :param fired_block: fired_block
     :type fired_block: tuple[int, int]
     """
+    if not isinstance(fired_block, tuple):
+        raise Warning
     dotted_set.add(fired_block)
 
 
@@ -366,6 +368,8 @@ def update_destroyed_ships(ind, player2_turn, opponents_ships_list_original_copy
     :param opponents_ships_list_original_copy: opponents_ships_list_original_copy
     :type opponents_ships_list_original_copy: list[list]
     """
+    if not isinstance(opponents_ships_list_original_copy, list):
+        raise Warning
     ship = sorted(opponents_ships_list_original_copy[ind])
     for i in range(-1, 1):
         update_dotted_and_hit_sets(ship[i], player2_turn, False)
@@ -454,6 +458,8 @@ def ship_is_valid(ship_set, blocks_for_manual_drawing):
        :return: ship_set.isdisjoint(blocks_for_manual_drawing)
        :rtype:bool
     """
+    if len(ship_set) > 4:
+        raise Warning
     return ship_set.isdisjoint(blocks_for_manual_drawing)
 
 
@@ -467,6 +473,8 @@ def check_ships_numbers(ship, num_ship_list):
        :return: (5 - len(ship)) > num_ship_list[len(ship) - 1]
        :rtype: bool
     """
+    if num_ship_list[-1] > 1 or num_ship_list[-2] > 2 or num_ship_list[-3] > 3 or num_ship_list[-4] > 4:
+        raise Warning
     return (5 - len(ship)) > num_ship_list[len(ship) - 1]
 
 
@@ -480,6 +488,8 @@ def update_used_blocks(ship, used_blocks_set):
     :return: used_blocks_set: used_blocks_set
     :rtype: set
     """
+    if not isinstance(ship, set):
+        raise Warning
     for block in ship:
         for i in range(-1, 2):
             for j in range(-1, 2):
@@ -497,6 +507,8 @@ def restore_used_blocks(deleted_ship, used_blocks_set):
     :return: used_blocks_set: used_blocks_set
     :rtype: set
     """
+    if isinstance(used_blocks_set, list):
+        raise Warning
     for block in deleted_ship:
         for i in range(-1, 2):
             for j in range(-1, 2):
@@ -615,11 +627,13 @@ def manual_ships(offset, drawing, ships_not_created, rect_for_grids, num_ships_l
 def files_ships_function(file):
     """A function for opening a file and creating ships based on data from the file
 
-    :param file:
+    :param file: file
     :type file: str
     :return: [files_ships_list, files_ships_set]
     :rtype: list
     """
+    if not isinstance(file, str):
+        raise Warning
     with open(file) as f:
         files_ships_list = list()
         files_ships_set = set()
