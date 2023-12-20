@@ -28,46 +28,42 @@ font = pygame.font.SysFont('notosans', font_size)
 
 
 class AutoShips:
-    def __init__(self, offset):
-        """Randomly create all player's ships on a grid
+    """ class for creating ships automatically
 
-        :param offset: where the grid starts
-        :type offset: int
-        """
+    :param offset: where the grid starts
+    :type offset: int
+    :param available_blocks: coordinates of all blocks that are avaiable for creating ships
+    :type available_blocks: set[tuple[int, int]]
+    :param ships_set: set of ships
+    :type ships_set: set
+    :param ships: list of ships
+    :type ships: list
+    :param number_of_blocks: length of a needed ship
+    :type number_of_blocks: int
+    :param coor:  x or y coordinate to increment/decrement
+    :type coor: int
+    :param str_rev: 1 or -1
+    :type str_rev: int
+    :param x_or_y: 0 or 1
+    :type x_or_y: int
+    :param ship_coordinates: coordinates of unfinished ship
+    :type ship_coordinates: list[tuple[Any, Any]]
+    :param new_ship: list of tuples with a newly created ship's coordinates
+    :type new_ship: list
+    """
+    def __init__(self, offset):
         self.offset = offset
         self.available_blocks = set((x, y) for x in range(1 + self.offset, 11 + self.offset) for y in range(1, 11))
         self.ships_set = set()
         self.ships = self.populate_grid()
 
     def create_start_block(self, available_blocks):
-        """Randomly chooses a block from which to start creating a ship.
-        Randomly chooses horizontal or vertical type_of a ship
-        Randomly chooses direction (from the start block) - straight or reverse
-
-        :param available_blocks: coordinates of all blocks that are avaiable for creating ships
-        :type available_blocks: set[tuple[int, int]]
-        :return: x, y, x_or_y, str_rev
-        :rtype: tuple
-        """
         x_or_y = random.randint(0, 1)
         str_rev = random.choice((-1, 1))
         x, y = random.choice(tuple(available_blocks))
         return x, y, x_or_y, str_rev
 
     def create_ship(self, number_of_blocks, available_blocks):
-        """Creates a ship of given length (number_of_blocks) starting from the start block
-                returned by the previous method, using type of ship and direction (changing it
-                if going outside of grid) returned by previous method.
-                Checks if the ship is valid (not adjacent to other ships and within the grid)
-                and adds it to the list of ships.
-
-        :param number_of_blocks: length of a needed ship
-        :type number_of_blocks: int
-        :param available_blocks: free blocks for creating ships
-        :type available_blocks: set[tuple[int, int]]
-        :return: ship_coordinates (a list of tuples with a new ship's coordinates)
-        :rtype: list
-        """
         ship_coordinates = []
         x, y, x_or_y, str_rev = self.create_start_block(available_blocks)
         for _ in range(number_of_blocks):
@@ -83,20 +79,6 @@ class AutoShips:
         return self.create_ship(number_of_blocks, available_blocks)
 
     def get_new_block_to_ship(self, coor, str_rev, x_or_y, ship_coordinates):
-        """Checks if new individual blocks that are being added to a ship in the previous method
-                are within the grid, otherwise changes the direction
-
-        :param coor:  x or y coordinate to increment/decrement
-        :type coor: int
-        :param str_rev: 1 or -1
-        :type str_rev: int
-        :param x_or_y: 0 or 1
-        :type x_or_y: int
-        :param ship_coordinates: coordinates of unfinished ship
-        :type ship_coordinates: list[tuple[Any, Any]]
-        :returns: str_rev, ship_coordinates[0][x_or_y] + str_rev or str_rev, ship_coordinates[-1][x_or_y] + str_rev
-        :rtype: tuple
-        """
         if (coor <= 1 - self.offset * (x_or_y - 1) and str_rev == -1) or (
                 coor >= 10 - self.offset * (x_or_y - 1) and str_rev == 1):
             str_rev *= -1
@@ -105,28 +87,13 @@ class AutoShips:
             return str_rev, ship_coordinates[-1][x_or_y] + str_rev
 
     def is_ship_valid(self, new_ship):
-        """Check if all of a ship's coordinates are within the available blocks set
-
-        :param new_ship: list of tuples with a newly created ship's coordinates
-        :type new_ship: list
-        """
         ship = set(new_ship)
         return ship.issubset(self.available_blocks)
 
     def add_new_ship_to_set(self, new_ship):
-        """Adds all blocks in a ship's list to the ships_set
-
-        :param new_ship: list of tuples with a newly created ship's coordinates
-        :type new_ship: list
-        """
         self.ships_set.update(new_ship)
 
     def update_available_blocks_for_creating_ships(self, new_ship):
-        """Removes all blocks occupied by a ship and around it from the available blocks set
-
-        :param new_ship: list of tuples with a newly created ship's coordinates
-        :type new_ship: list
-        """
         for elem in new_ship:
             for k in range(-1, 2):
                 for m in range(-1, 2):
@@ -134,12 +101,6 @@ class AutoShips:
                         self.available_blocks.discard((elem[0] + k, elem[1] + m))
 
     def populate_grid(self):
-        """Creates needed number of each type of ships by calling the create_ship method.
-                Adds every ship to the ships list, ships_set and updates the available blocks.
-
-        :return: ships_coordinates_list
-        :rtype: list[list]
-        """
         ships_coordinates_list = []
         for number_of_blocks in range(4, 0, -1):
             for _ in range(5 - number_of_blocks):
@@ -152,16 +113,34 @@ class AutoShips:
 
 
 class Button:
-    def __init__(self, x_offset, button_title, message_to_show):
-        """Class creates buttons and prints explanatory message for them
+    """Class creates buttons and prints explanatory message for them
 
-        :param x_offset: horizontal offset where to start drawing button
-        :type x_offset: int
-        :param button_title: Button's name
-        :type button_title: str
-        :param message_to_show: explanatory message to print onscreen
-        :type message_to_show: str
-        """
+    :param x_offset: horizontal offset where to start drawing button
+    :type x_offset: int
+    :param button_title: Button's name
+    :type button_title: str
+    :param title_width: width of title
+    :type title_width: int
+    :param title_height: height pf title
+    :type title_height: int
+    :param message_to_show: explanatory message to print onscreen
+    :type message_to_show: str
+    :param color: Button's color. Defaults to None (BLACK)
+    :type color: tuple
+    :param mouse: pose of mouse
+    :type mouse: tuple[int, int]
+    :param x_start: where the button starts
+    :type x_start: int
+    :param y_start: where the button starts
+    :type y_start: int
+    :param rect_for_draw: rectangle coordinates
+    :type rect_for_draw: tuple[int, int, int, int]
+    :param rect: rect
+    :type rect: Rect
+    :param rect_for_draw_button_title: place of button title
+    :type rect_for_draw_button_title: tuple[float, float]
+    """
+    def __init__(self, x_offset, button_title, message_to_show):
         self.title = button_title
         self.title_width, self.title_height = font.size(self.title)
         self.message = message_to_show
@@ -178,11 +157,6 @@ class Button:
         self.color = BLACK
 
     def draw_button(self, color=None):
-        """Draws button as a rectangle of color (default is BLACK)
-
-        :param color: Button's color. Defaults to None (BLACK)
-        :type color: tuple
-        """
         if not color:
             color = self.color
         pygame.draw.rect(screen, color, self.rect_for_draw)
@@ -190,17 +164,11 @@ class Button:
         screen.blit(text_to_blit, self.rect_for_draw_button_title)
 
     def change_color_on_hover(self):
-        """
-        Draws button as a rectangle of GREEN_BLUE color
-        """
         mouse = pygame.mouse.get_pos()
         if self.rect.collidepoint(mouse):
             self.draw_button(GREEN_BLUE)
 
     def print_message_for_button(self):
-        """
-        Prints explanatory message next to button
-        """
         if self.message:
             message_width, message_height = font.size(self.message)
             rect_for_message = (self.x_start / 2 - message_width / 2,
@@ -230,6 +198,10 @@ player2_ships_to_draw = []
 def draw_ships(ships_coordinates_list):
     """Draws rectangles around the blocks that are occupied by a ship
 
+    :param x_start: where the ship starts
+    :type x_start: int
+    :param y_start: where the ship starts
+    :type y_start: int
     :param ships_coordinates_list:  a list of ships s coordinates
     :type ships_coordinates_list: list[list]
     """
@@ -250,14 +222,14 @@ def draw_ships(ships_coordinates_list):
 
 
 class Grid:
-    def __init__(self, title, offset):
-        """ Class to draw the grids and add title, numbers and letters to them
+    """Class to draw the grids and add title, numbers and letters to them
 
-        :param title: Players' name to be displayed on the top of his grid
-        :type title: str
-        :param offset:  Where the grid starts (in number of blocks)
-        :type offset: int
-        """
+    :param title: Players' name to be displayed on the top of his grid
+    :type title: str
+    :param offset:  Where the grid starts (in number of blocks)
+    :type offset: int
+    """
+    def __init__(self, title, offset):
         self.title = title
         self.offset = offset
         self.draw_grid()
@@ -265,9 +237,6 @@ class Grid:
         self.sign_grids()
 
     def draw_grid(self):
-        """
-        Draws two grids for both players
-        """
         for i in range(11):
             # Hor grid
             pygame.draw.line(screen, BLACK, (left_margin + self.offset, upper_margin + i * block_size),
@@ -277,10 +246,6 @@ class Grid:
                              (left_margin + i * block_size + self.offset, upper_margin + 10 * block_size), 1)
 
     def add_nums_letters_to_grid(self):
-        """
-         Draws numbers 1-10 along vertical and adds letters below horizontal
-        lines for both grids
-        """
         for i in range(10):
             num_ver = font.render(str(i + 1), True, BLACK)
             letters_hor = font.render(LETTERS[i], True, BLACK)
@@ -297,9 +262,6 @@ class Grid:
                                       upper_margin - block_size))
 
     def sign_grids(self):
-        """
-        Puts players' names (titles) in the center above the grids
-        """
         player = font.render(self.title, True, BLACK)
         sign_width = player.get_width()
         screen.blit(player, (left_margin + 5 * block_size - sign_width // 2 + self.offset,
@@ -432,13 +394,13 @@ def draw_hit_blocks(hit_blocks):
 def show_message_at_rect_center(text, rect, which_font=font, color=RED):
     """Prints message to screen at a given rect's center.
 
-       :param text: Message to print
-       :type text: str
-       :param rect: rectangle in (x_start, y_start, width, height) format
-       :type rect: tuple
-       :param which_font: What font to use to print message. Defaults to font.
-       :param color: Color of the message. Defaults to RED.
-       :type color: tuple
+   :param text: Message to print
+   :type text: str
+   :param rect: rectangle in (x_start, y_start, width, height) format
+   :type rect: tuple
+   :param which_font: What font to use to print message. Defaults to font.
+   :param color: Color of the message. Defaults to RED.
+   :type color: tuple
     """
     text_width, text_height = which_font.size(text)
     text_rect = pygame.Rect(rect)
@@ -451,12 +413,12 @@ def show_message_at_rect_center(text, rect, which_font=font, color=RED):
 def ship_is_valid(ship_set, blocks_for_manual_drawing):
     """Checks if ship is not touching other ships
 
-       :param ship_set: ship_set
-       :type ship_set: set
-       :param blocks_for_manual_drawing: blocks_for_manual_drawing
-       :type blocks_for_manual_drawing: set
-       :return: ship_set.isdisjoint(blocks_for_manual_drawing)
-       :rtype:bool
+   :param ship_set: ship_set
+   :type ship_set: set
+   :param blocks_for_manual_drawing: blocks_for_manual_drawing
+   :type blocks_for_manual_drawing: set
+   :return: ship_set.isdisjoint(blocks_for_manual_drawing)
+   :rtype:bool
     """
     if len(ship_set) > 4:
         raise Warning
@@ -466,12 +428,12 @@ def ship_is_valid(ship_set, blocks_for_manual_drawing):
 def check_ships_numbers(ship, num_ship_list):
     """Checks if a ship of particular length (1-4) does not exceed necessary quantity (4-1)
 
-       :param ship: List with new ships' coordinates
-       :type ship: list
-       :param num_ship_list: List_with numbers of particular ships on respective indexes.
-       :type num_ship_list: list
-       :return: (5 - len(ship)) > num_ship_list[len(ship) - 1]
-       :rtype: bool
+   :param ship: List with new ships' coordinates
+   :type ship: list
+   :param num_ship_list: List_with numbers of particular ships on respective indexes.
+   :type num_ship_list: list
+   :return: (5 - len(ship)) > num_ship_list[len(ship) - 1]
+   :rtype: bool
     """
     if num_ship_list[-1] > 1 or num_ship_list[-2] > 2 or num_ship_list[-3] > 3 or num_ship_list[-4] > 4:
         raise Warning
@@ -650,8 +612,58 @@ start_time = time.time()
 
 
 def main():
-    """
-    the main function responsible for the operation of the entire program
+    """the main function responsible for the operation of the entire program
+
+    :param game_over: game over or not
+    :type game_over: bool
+    :param player2_turn: the first or second player moves
+    :type player2_turn: bool
+    :param drawing: draw or not draw some object
+    :type drawing: bool
+    :param start: The beginning of drawing the ship
+    :type start: tuple[int, int]
+    :param ship_size: ship size
+    :type ship_size: tuple[int, int]
+    :param ships_creation_not_decided: choosing a way to create a ships
+    :type ships_creation_not_decided: bool
+    :param ships_not_created: checks if all ships are built
+    :type ships_not_created: bool
+    :param rect_for_grids: rect for grids
+    :type rect_for_grids: tuple[int, int, int, int]
+    :param rect_for_messages_and_buttons:
+    :type rect_for_messages_and_buttons:
+    :param player1_ships_to_draw: player1 ships to draw
+    :type player1_ships_to_draw: list
+    :param player1_ships_set: player1 ships set
+    :type player1_ships_set: set
+    :param player2_ships_to_draw:  player2 ships to draw
+    :type player2_ships_to_draw: list
+    :param player2_ships_set: player2 ships set
+    :type player2_ships_set: set
+    :param used_blocks_for_manual_drawing: area for drawing ships manually
+    :type used_blocks_for_manual_drawing: set
+    :param num_ships_player1_list: stores the number and length of ships for player1
+    :type num_ships_player1_list: tuple[int, int, int, int]
+    :param num_ships_player2_list: stores the number and length of ships for player2
+    :type num_ships_player2_list: tuple[int, int, int, int]
+    :param player1_grid: grid for player1
+    :type player1_grid: Grid
+    :param player2_grid: grid for player2
+    :type player2_grid: Grid
+    :param player1: player 1
+    :type player1: AutoShips
+    :param player2: player2
+    :type player2: AutoShips
+    :param player1_ships_working: the first player's work ships
+    :type player1_ships_working:  list
+    :param player2_ships_working:the second player's work ships
+    :type player2_ships_working: list
+    :param auto_button: button for auto
+    :type auto_button: Button
+    :param files_button: button for files
+    :type files_button: Button
+    :param manual_button: button for manual
+    :type manual_button:Button
     """
     game_over = False
     player2_turn = False
