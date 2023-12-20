@@ -547,8 +547,8 @@ def manual_ships(offset, drawing, ships_not_created, rect_for_grids, num_ships_l
                 if start_block > end_block:
                     start_block, end_block = end_block, start_block
                 temp_ship = []
-                if (0 + offset < start_block[0] < 15 + offset and 0 < start_block[1] < 11 and
-                        0 + offset < end_block[0] < 15 + offset and 0 < end_block[1] < 11):
+                if (0 + offset < start_block[0] < 11 + offset and 0 < start_block[1] < 11 and
+                        0 + offset < end_block[0] < 11 + offset and 0 < end_block[1] < 11):
                     screen.fill(WHITE, message_rect_for_drawing_ships)
                     if start_block[0] == end_block[0] and (end_block[1] - start_block[1]) < 4:
                         for block in range(start_block[1], end_block[1] + 1):
