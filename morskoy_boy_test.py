@@ -66,6 +66,13 @@ class MyTestCase(unittest.TestCase):
         assert (7, 6) in dotted_set
         self.assertEqual(len(dotted_set), 13)
 
+    def test_files_ships_function(self):
+        file = 'player_grid_for_test.txt'
+        result = files_ships_function(file)
+        self.assertEqual(result[0], [[(7, 3), (6, 3), (5, 3), (4, 3)], [(1, 7), (2, 7), (3, 7)],
+                                     [(2, 3), (2, 4), (2, 5)], [(10, 10), (10, 9)], [(7, 5), (7, 6)],
+                                     [(10, 5), (9, 5)], [(10, 1)], [(4, 10)], [(8, 9)], [(10, 3)]])
+
 
 if __name__ == '__main__':
     unittest.main()

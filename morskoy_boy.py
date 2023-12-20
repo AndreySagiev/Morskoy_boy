@@ -13,7 +13,7 @@ block_size = 50
 left_margin = 2 * block_size
 upper_margin = block_size
 
-size = (left_margin+30*block_size, upper_margin+15*block_size)
+size = (left_margin + 30 * block_size, upper_margin + 15 * block_size)
 LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
 dotted_set = set()
 hit_blocks = set()
@@ -35,7 +35,7 @@ class AutoShips:
         :type offset: int
         """
         self.offset = offset
-        self.available_blocks = set((x, y) for x in range(1+self.offset, 11+self.offset) for y in range(1, 11))
+        self.available_blocks = set((x, y) for x in range(1 + self.offset, 11 + self.offset) for y in range(1, 11))
         self.ships_set = set()
         self.ships = self.populate_grid()
 
@@ -45,7 +45,7 @@ class AutoShips:
         Randomly chooses direction (from the start block) - straight or reverse
 
         :param available_blocks: coordinates of all blocks that are avaiable for creating ships
-        :type available_blocks: set
+        :type available_blocks: set[tuple[int, int]]
         :return: x, y, x_or_y, str_rev
         :rtype: tuple
         """
@@ -64,7 +64,7 @@ class AutoShips:
         :param number_of_blocks: length of a needed ship
         :type number_of_blocks: int
         :param available_blocks: free blocks for creating ships
-        :type available_blocks: set
+        :type available_blocks: set[tuple[int, int]]
         :return: ship_coordinates (a list of tuples with a new ship's coordinates)
         :rtype: list
         """
@@ -93,12 +93,12 @@ class AutoShips:
         :param x_or_y: 0 or 1
         :type x_or_y: int
         :param ship_coordinates: coordinates of unfinished ship
-        :type ship_coordinates: list
+        :type ship_coordinates: list[tuple[Any, Any]]
         :returns: str_rev, ship_coordinates[0][x_or_y] + str_rev or str_rev, ship_coordinates[-1][x_or_y] + str_rev
         :rtype: tuple
         """
-        if (coor <= 1 - self.offset*(x_or_y-1) and str_rev == -1) or (
-                coor >= 10 - self.offset*(x_or_y-1) and str_rev == 1):
+        if (coor <= 1 - self.offset * (x_or_y - 1) and str_rev == -1) or (
+                coor >= 10 - self.offset * (x_or_y - 1) and str_rev == 1):
             str_rev *= -1
             return str_rev, ship_coordinates[0][x_or_y] + str_rev
         else:
@@ -130,19 +130,19 @@ class AutoShips:
         for elem in new_ship:
             for k in range(-1, 2):
                 for m in range(-1, 2):
-                    if 0+self.offset < (elem[0]+k) < 11+self.offset and 0 < (elem[1]+m) < 11:
-                        self.available_blocks.discard((elem[0]+k, elem[1]+m))
+                    if 0 + self.offset < (elem[0] + k) < 11 + self.offset and 0 < (elem[1] + m) < 11:
+                        self.available_blocks.discard((elem[0] + k, elem[1] + m))
 
     def populate_grid(self):
         """Creates needed number of each type of ships by calling the create_ship method.
                 Adds every ship to the ships list, ships_set and updates the available blocks.
 
         :return: ships_coordinates_list
-        :rtype: list
+        :rtype: list[list]
         """
         ships_coordinates_list = []
         for number_of_blocks in range(4, 0, -1):
-            for _ in range(5-number_of_blocks):
+            for _ in range(5 - number_of_blocks):
                 new_ship = self.create_ship(
                     number_of_blocks, self.available_blocks)
                 ships_coordinates_list.append(new_ship)
@@ -211,15 +211,18 @@ class Button:
 
 auto_button_place = left_margin + 17 * block_size
 manual_button_place = left_margin + 20 * block_size
+files_button_place = left_margin + 24.5 * block_size
 how_to_create_ships_message = "Как вы хотите создать корабли?(АВТО через 1.5мин)"
 auto_button = Button(auto_button_place, "АВТО", how_to_create_ships_message)
 manual_button = Button(manual_button_place, "ВРУЧНУЮ", how_to_create_ships_message)
+files_button = Button(files_button_place, "ФАЙЛЫ", how_to_create_ships_message)
 undo_message = "Для отмены последнего корабля нажмити кнопку"
 undo_button_place = left_margin + 14 * block_size
 undo_button = Button(undo_button_place, "ОТМЕНА", undo_message)
 message_rect_for_drawing_ships = (undo_button.rect_for_draw[0] + undo_button.rect_for_draw[2],
                                   upper_margin + 11 * block_size,
-                                  size[0] - (undo_button.rect_for_draw[0] + undo_button.rect_for_draw[2]), 4*block_size)
+                                  size[0] - (undo_button.rect_for_draw[0] + undo_button.rect_for_draw[2]),
+                                  4 * block_size)
 player1_ships_to_draw = []
 player2_ships_to_draw = []
 
@@ -228,7 +231,7 @@ def draw_ships(ships_coordinates_list):
     """Draws rectangles around the blocks that are occupied by a ship
 
     :param ships_coordinates_list:  a list of ships s coordinates
-    :type ships_coordinates_list: list
+    :type ships_coordinates_list: list[list]
     """
     for elem in ships_coordinates_list:
         ship = sorted(elem)
@@ -243,7 +246,7 @@ def draw_ships(ships_coordinates_list):
         x = block_size * (x_start - 1) + left_margin
         y = block_size * (y_start - 1) + upper_margin
         pygame.draw.rect(
-            screen, BLACK, ((x, y), (ship_width, ship_height)), width=block_size//10)
+            screen, BLACK, ((x, y), (ship_width, ship_height)), width=block_size // 10)
 
 
 class Grid:
@@ -267,11 +270,11 @@ class Grid:
         """
         for i in range(11):
             # Hor grid
-            pygame.draw.line(screen, BLACK, (left_margin+self.offset, upper_margin+i*block_size),
-                             (left_margin+10*block_size+self.offset, upper_margin+i*block_size), 1)
+            pygame.draw.line(screen, BLACK, (left_margin + self.offset, upper_margin + i * block_size),
+                             (left_margin + 10 * block_size + self.offset, upper_margin + i * block_size), 1)
             # Vert grid
-            pygame.draw.line(screen, BLACK, (left_margin+i*block_size+self.offset, upper_margin),
-                             (left_margin+i*block_size+self.offset, upper_margin+10*block_size), 1)
+            pygame.draw.line(screen, BLACK, (left_margin + i * block_size + self.offset, upper_margin),
+                             (left_margin + i * block_size + self.offset, upper_margin + 10 * block_size), 1)
 
     def add_nums_letters_to_grid(self):
         """
@@ -279,18 +282,18 @@ class Grid:
         lines for both grids
         """
         for i in range(10):
-            num_ver = font.render(str(i+1), True, BLACK)
+            num_ver = font.render(str(i + 1), True, BLACK)
             letters_hor = font.render(LETTERS[i], True, BLACK)
             num_ver_width = num_ver.get_width()
             num_ver_height = num_ver.get_height()
             letters_hor_width = letters_hor.get_width()
 
             # Ver num grid1
-            screen.blit(num_ver, (left_margin - (block_size//2+num_ver_width//2)+self.offset,
-                                  upper_margin + i*block_size + (block_size//2 - num_ver_height//2)))
+            screen.blit(num_ver, (left_margin - (block_size // 2 + num_ver_width // 2) + self.offset,
+                                  upper_margin + i * block_size + (block_size // 2 - num_ver_height // 2)))
             # Hor LETTERS grid1
-            screen.blit(letters_hor, (left_margin + i*block_size + (block_size //
-                                                                    2 - letters_hor_width//2)+self.offset,
+            screen.blit(letters_hor, (left_margin + i * block_size + (block_size //
+                                                                      2 - letters_hor_width // 2) + self.offset,
                                       upper_margin - block_size))
 
     def sign_grids(self):
@@ -308,15 +311,15 @@ def check_hit_or_miss(fired_block, opponents_ships_list, player2_turn, opponents
     """Checks whether the block that was shot at either by computer or by human is a hit or a miss.
 
     :param fired_block: fired_block
-    :type fired_block: tuple
+    :type fired_block: tuple[int, int]
     :param opponents_ships_list: opponents_ships_list
-    :type opponents_ships_list: list
+    :type opponents_ships_list: list[list]
     :param player2_turn: turn of player2 or  player1
     :type player2_turn: bool
     :param opponents_ships_list_original_copy: opponents_ships_list_original_copy
-    :type opponents_ships_list_original_copy: list
+    :type opponents_ships_list_original_copy: list[list]
     :param opponents_ships_set: opponents_ships_set
-    :type opponents_ships_set: set
+    :type opponents_ships_set: set[list]
     :returns: True or False
     :rtype: bool
     """
@@ -348,7 +351,7 @@ def add_missed_block_to_dotted_set(fired_block):
     """Adds a fired_block to the set of missed shots
 
     :param fired_block: fired_block
-    :type fired_block: tuple
+    :type fired_block: tuple[int, int]
     """
     dotted_set.add(fired_block)
 
@@ -361,7 +364,7 @@ def update_destroyed_ships(ind, player2_turn, opponents_ships_list_original_copy
     :param player2_turn: turn of player2 or  player1
     :type player2_turn: bool
     :param opponents_ships_list_original_copy: opponents_ships_list_original_copy
-    :type opponents_ships_list_original_copy: list
+    :type opponents_ships_list_original_copy: list[list]
     """
     ship = sorted(opponents_ships_list_original_copy[ind])
     for i in range(-1, 1):
@@ -372,7 +375,7 @@ def update_dotted_and_hit_sets(fired_block, player2_turn, diagonal_only=True):
     """ Puts dots in center of diagonal or all around a block that was hit
 
     :param fired_block: fired_block
-    :type fired_block: tuple
+    :type fired_block: tuple[int, int]
     :param player2_turn: turn of player2 or  player1
     :type player2_turn: bool
     :param diagonal_only: only diagonal or all blocks
@@ -389,10 +392,10 @@ def update_dotted_and_hit_sets(fired_block, player2_turn, diagonal_only=True):
         for j in range(-1, 2):
             if diagonal_only:
                 if i != 0 and j != 0 and a < x + i < b and 0 < y + j < 11:
-                    dotted_set.add((x+i, y+j))
+                    dotted_set.add((x + i, y + j))
             else:
                 if a < x + i < b and 0 < y + j < 11:
-                    dotted_set.add((x+i, y+j))
+                    dotted_set.add((x + i, y + j))
     dotted_set -= hit_blocks
 
 
@@ -403,8 +406,8 @@ def draw_from_dotted_set(dotted_set):
     :type dotted_set: set
     """
     for elem in dotted_set:
-        pygame.draw.circle(screen, BLACK, (block_size*(
-            elem[0]-0.5)+left_margin, block_size*(elem[1]-0.5)+upper_margin), block_size//6)
+        pygame.draw.circle(screen, BLACK, (block_size * (
+                elem[0] - 0.5) + left_margin, block_size * (elem[1] - 0.5) + upper_margin), block_size // 6)
 
 
 def draw_hit_blocks(hit_blocks):
@@ -414,12 +417,12 @@ def draw_hit_blocks(hit_blocks):
     :type hit_blocks: set
     """
     for block in hit_blocks:
-        x1 = block_size * (block[0]-1) + left_margin
-        y1 = block_size * (block[1]-1) + upper_margin
+        x1 = block_size * (block[0] - 1) + left_margin
+        y1 = block_size * (block[1] - 1) + upper_margin
         pygame.draw.line(screen, BLACK, (x1, y1),
-                         (x1+block_size, y1+block_size), block_size//6)
-        pygame.draw.line(screen, BLACK, (x1, y1+block_size),
-                         (x1+block_size, y1), block_size//6)
+                         (x1 + block_size, y1 + block_size), block_size // 6)
+        pygame.draw.line(screen, BLACK, (x1, y1 + block_size),
+                         (x1 + block_size, y1), block_size // 6)
 
 
 def show_message_at_rect_center(text, rect, which_font=font, color=RED):
@@ -437,9 +440,7 @@ def show_message_at_rect_center(text, rect, which_font=font, color=RED):
     text_rect = pygame.Rect(rect)
     x_start = text_rect.centerx - text_width / 2
     y_start = text_rect.centery - text_height / 2
-    background_rect = pygame.Rect(x_start - block_size / 2, y_start, text_width + block_size, text_height)
     text_to_blit = which_font.render(text, True, color)
-    screen.fill(WHITE, background_rect)
     screen.blit(text_to_blit, (x_start, y_start))
 
 
@@ -482,7 +483,7 @@ def update_used_blocks(ship, used_blocks_set):
     for block in ship:
         for i in range(-1, 2):
             for j in range(-1, 2):
-                used_blocks_set.add((block[0]+i, block[1]+j))
+                used_blocks_set.add((block[0] + i, block[1] + j))
     return used_blocks_set
 
 
@@ -499,7 +500,7 @@ def restore_used_blocks(deleted_ship, used_blocks_set):
     for block in deleted_ship:
         for i in range(-1, 2):
             for j in range(-1, 2):
-                used_blocks_set.discard((block[0]+i, block[1]+j))
+                used_blocks_set.discard((block[0] + i, block[1] + j))
     return used_blocks_set
 
 
@@ -514,17 +515,17 @@ def manual_ships(offset, drawing, ships_not_created, rect_for_grids, num_ships_l
     :param ships_not_created: shows whether ships have been created or not
     :type ships_not_created: bool
     :param rect_for_grids: rect_for_grids
-    :type rect_for_grids: tuple
+    :type rect_for_grids: tuple[int, int, int, int]
     :param num_ships_list: list with the number of ship lengths and their number
-    :type num_ships_list: list
+    :type num_ships_list: list[int]
     :param player_ships_set: Lots of ships
     :type player_ships_set: set
     :param rect_for_messages_and_buttons: rect for messages and buttons
-    :type rect_for_messages_and_buttons: tuple
+    :type rect_for_messages_and_buttons: tuple[int, int, int, int]
     :param start: the beginning of the construction of ship
-    :type start: tuple
+    :type start: tuple[int, int]
     :param ship_size: ship size
-    :type ship_size: tuple
+    :type ship_size: tuple[int, int]
     :param used_blocks_for_manual_drawing: blocks on which ships are drawn
     :type used_blocks_for_manual_drawing: set
     :param player_ships_to_draw: player's work ships to draw
@@ -611,6 +612,26 @@ def manual_ships(offset, drawing, ships_not_created, rect_for_grids, num_ships_l
     return copy.deepcopy(player_ships_to_draw)
 
 
+def files_ships_function(file):
+    """A function for opening a file and creating ships based on data from the file
+
+    :param file:
+    :type file: str
+    :return: [files_ships_list, files_ships_set]
+    :rtype: list
+    """
+    with open(file) as f:
+        files_ships_list = list()
+        files_ships_set = set()
+        files_ships = f.readline()
+        files_ships = files_ships.replace('[[', '[').replace(']]', ']').replace('],', ']|').split('|')
+        for ship in files_ships:
+            elements = ship.rstrip().lstrip().replace('[(', '(').replace(')]', ')').replace('),', ')|').split('|')
+            files_ships_list.append([eval(element) for element in elements])
+            files_ships_set.update([eval(element) for element in elements])
+        return [files_ships_list, files_ships_set]
+
+
 start_time = time.time()
 
 
@@ -655,8 +676,10 @@ def main():
             break
         auto_button.draw_button()
         manual_button.draw_button()
+        files_button.draw_button()
         auto_button.change_color_on_hover()
         manual_button.change_color_on_hover()
+        files_button.change_color_on_hover()
         auto_button.print_message_for_button()
         mouse = pygame.mouse.get_pos()
         for event in pygame.event.get():
@@ -675,6 +698,15 @@ def main():
                 player2_ships_working = copy.deepcopy(player2.ships)
                 ships_creation_not_decided = False
                 ships_not_created = False
+            elif event.type == pygame.MOUSEBUTTONDOWN and files_button.rect.collidepoint(mouse):
+                player1_ships_to_draw = files_ships_function('player1_grid.txt')[0]
+                player1_ships_set = files_ships_function('player1_grid.txt')[1]
+                player1_ships_working = copy.deepcopy(player1_ships_to_draw)
+                player2_ships_to_draw = files_ships_function('player2_grid.txt')[0]
+                player2_ships_set = files_ships_function('player2_grid.txt')[1]
+                player2_ships_working = copy.deepcopy(player2_ships_to_draw)
+                ships_creation_not_decided = False
+                ships_not_created = False
             elif event.type == pygame.MOUSEBUTTONDOWN and manual_button.rect.collidepoint(mouse):
                 ships_creation_not_decided = False
 
@@ -691,8 +723,8 @@ def main():
                                          used_blocks_for_manual_drawing, player2_ships_to_draw)
 
     while not game_over:
-        # draw_ships(player1_ships_to_draw)
-        # draw_ships(player1_ships_to_draw)
+        draw_ships(player1_ships_to_draw)
+        draw_ships(player2_ships_to_draw)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_over = True
@@ -716,10 +748,12 @@ def main():
             pass
         elif not player2_ships_set:
             show_message_at_rect_center(
-                "ВЫИГРАЛ PLAYER1!", (0, 0, size[0], size[1]), font)
+                "ВЫИГРАЛ PLAYER1!", (0, 0, size[0], size[1]),
+                pygame.font.SysFont('notosans', font_size + block_size * 2))
         elif not player1_ships_set:
             show_message_at_rect_center(
-                "ВЫИГРАЛ PLAYER2!", (0, 0, size[0], size[1]), font)
+                "ВЫИГРАЛ PLAYER2!", (0, 0, size[0], size[1]),
+                pygame.font.SysFont('notosans', font_size + block_size * 2))
         pygame.display.update()
         draw_from_dotted_set(dotted_set)
         draw_hit_blocks(hit_blocks)
